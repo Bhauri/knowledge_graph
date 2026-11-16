@@ -1,0 +1,912 @@
+version: "1.0"
+
+business_concepts:
+
+  # ============================================================
+  # DATE / TIME CONCEPTS
+  # ============================================================
+
+  created_date:
+    type: PROPERTY_ALIAS
+    aliases:
+      - created date
+      - creation date
+      - date created
+      - created on
+      - creation time
+      - created timestamp
+    semantic_role: CREATED_DATE
+
+  due_date:
+    type: PROPERTY_ALIAS
+    aliases:
+      - due date
+      - deadline
+      - due
+      - target date
+      - expected completion date
+    semantic_role: DUE_DATE
+
+  completed_date:
+    type: PROPERTY_ALIAS
+    aliases:
+      - completed date
+      - completion date
+      - date completed
+      - completion time
+      - completed on
+    semantic_role: COMPLETED_DATE
+
+  closed_date:
+    type: PROPERTY_ALIAS
+    aliases:
+      - closed date
+      - closure date
+      - date closed
+      - closed on
+    semantic_role: CLOSED_DATE
+
+  last_n_days:
+    type: TEMPORAL
+    aliases:
+      - last days
+      - past days
+      - previous days
+    parameterized: true
+    semantic_role: RELATIVE_DATE_RANGE
+
+  last_n_weeks:
+    type: TEMPORAL
+    aliases:
+      - last weeks
+      - past weeks
+      - previous weeks
+    parameterized: true
+    semantic_role: RELATIVE_DATE_RANGE
+
+  last_n_months:
+    type: TEMPORAL
+    aliases:
+      - last months
+      - past months
+      - previous months
+      - recent months
+    parameterized: true
+    semantic_role: RELATIVE_DATE_RANGE
+
+  last_n_years:
+    type: TEMPORAL
+    aliases:
+      - last years
+      - past years
+      - previous years
+    parameterized: true
+    semantic_role: RELATIVE_DATE_RANGE
+
+  today:
+    type: TEMPORAL
+    aliases:
+      - today
+      - current day
+      - as of today
+    semantic_role: CURRENT_DATE
+
+  yesterday:
+    type: TEMPORAL
+    aliases:
+      - yesterday
+      - previous day
+    semantic_role: YESTERDAY
+
+  this_week:
+    type: TEMPORAL
+    aliases:
+      - this week
+      - current week
+    semantic_role: CURRENT_WEEK
+
+  this_month:
+    type: TEMPORAL
+    aliases:
+      - this month
+      - current month
+    semantic_role: CURRENT_MONTH
+
+  this_year:
+    type: TEMPORAL
+    aliases:
+      - this year
+      - current year
+    semantic_role: CURRENT_YEAR
+
+
+  # ============================================================
+  # STATUS CONCEPTS
+  # ============================================================
+
+  open:
+    type: DERIVED
+    aliases:
+      - open
+      - still open
+      - active
+      - not closed
+      - unresolved
+      - outstanding
+    semantic_role: OPEN_STATUS
+
+  closed:
+    type: DERIVED
+    aliases:
+      - closed
+      - completed
+      - resolved
+      - finished
+    semantic_role: CLOSED_STATUS
+
+  active:
+    type: DERIVED
+    aliases:
+      - active
+      - currently active
+      - in progress
+      - ongoing
+    semantic_role: ACTIVE_STATUS
+
+  completed:
+    type: STATUS_VALUE
+    aliases:
+      - completed
+      - complete
+      - finished
+      - done
+    semantic_role: COMPLETED_STATUS
+
+  pending:
+    type: STATUS_VALUE
+    aliases:
+      - pending
+      - waiting
+      - awaiting
+      - not completed
+    semantic_role: PENDING_STATUS
+
+  cancelled:
+    type: STATUS_VALUE
+    aliases:
+      - cancelled
+      - canceled
+      - aborted
+      - terminated
+    semantic_role: CANCELLED_STATUS
+
+
+  # ============================================================
+  # OVERDUE / DUE-DATE BUSINESS CONCEPTS
+  # ============================================================
+
+  overdue:
+    type: DERIVED
+    aliases:
+      - overdue
+      - past due
+      - late
+      - overdue item
+      - overdue action
+      - overdue capa
+    semantic_role: OVERDUE
+    rules:
+      - property_role: DUE_DATE
+        operator: "<"
+        value: CURRENT_DATE
+
+      - property_role: STATUS
+        operator: "NOT_IN"
+        values:
+          - Completed
+          - Closed
+          - Cancelled
+
+  due_today:
+    type: DERIVED
+    aliases:
+      - due today
+      - due now
+      - due on today
+    semantic_role: DUE_TODAY
+    rules:
+      - property_role: DUE_DATE
+        operator: "="
+        value: CURRENT_DATE
+
+  due_soon:
+    type: DERIVED
+    aliases:
+      - due soon
+      - approaching deadline
+      - nearing due date
+    semantic_role: DUE_SOON
+    parameters:
+      days: 7
+    rules:
+      - property_role: DUE_DATE
+        operator: ">="
+        value: CURRENT_DATE
+
+      - property_role: DUE_DATE
+        operator: "<="
+        value: CURRENT_DATE_PLUS_DAYS
+
+  overdue_for_n_days:
+    type: DERIVED
+    aliases:
+      - overdue for days
+      - overdue by days
+      - past due for days
+      - late for days
+    semantic_role: OVERDUE_DURATION
+    parameterized: true
+    rules:
+      - property_role: DUE_DATE
+        operator: "<="
+        value: CURRENT_DATE_MINUS_DAYS
+
+
+  # ============================================================
+  # RISK
+  # ============================================================
+
+  high_risk:
+    type: STATUS_VALUE
+    aliases:
+      - high risk
+      - high-risk
+      - high risk level
+      - severe risk
+    semantic_role: RISK_LEVEL
+    value: High
+
+  medium_risk:
+    type: STATUS_VALUE
+    aliases:
+      - medium risk
+      - moderate risk
+      - medium risk level
+    semantic_role: RISK_LEVEL
+    value: Medium
+
+  low_risk:
+    type: STATUS_VALUE
+    aliases:
+      - low risk
+      - low-risk
+      - low risk level
+    semantic_role: RISK_LEVEL
+    value: Low
+
+
+  # ============================================================
+  # FAILURE / DEFECT
+  # ============================================================
+
+  defect_code:
+    type: PROPERTY_ALIAS
+    aliases:
+      - defect code
+      - defect
+      - failure code
+      - failurecode
+      - failure
+      - defect number
+      - failure number
+      - error code
+      - issue code
+    preferred_property:
+      entity: QEEvent
+      property: failurecode
+      canonical_name: QEEvent.failurecode
+
+  failure_code:
+    type: PROPERTY_ALIAS
+    aliases:
+      - failure code
+      - failurecode
+      - failure number
+      - defect code
+    preferred_property:
+      entity: QEEvent
+      property: failurecode
+      canonical_name: QEEvent.failurecode
+
+
+  # ============================================================
+  # LOCATION / SITE
+  # ============================================================
+
+  location:
+    type: PROPERTY_ALIAS
+    aliases:
+      - location
+      - geographic location
+      - place
+      - region
+      - country
+      - city
+
+  site:
+    type: PROPERTY_ALIAS
+    aliases:
+      - site
+      - plant
+      - facility
+      - manufacturing site
+
+  owning_site:
+    type: PROPERTY_ALIAS
+    aliases:
+      - owning site
+      - owner site
+      - responsible site
+      - PSP site
+    preferred_property:
+      entity: PSP
+      property: owning_site
+      canonical_name: PSP.owning_site
+
+  initiating_site:
+    type: PROPERTY_ALIAS
+    aliases:
+      - initiating site
+      - originating site
+      - source site
+      - initiating plant
+    possible_properties:
+      - entity: QualityEvent
+        property: initiating_site
+        canonical_name: QualityEvent.initiating_site
+
+      - entity: CAPA
+        property: initiating_site
+        canonical_name: CAPA.initiating_site
+
+  batch_site:
+    type: PROPERTY_ALIAS
+    aliases:
+      - batch site
+      - batch plant
+      - manufacturing plant
+      - production site
+    preferred_property:
+      entity: Batch
+      property: batch_site
+      canonical_name: Batch.batch_site
+
+  origin:
+    type: BUSINESS_CONCEPT
+    aliases:
+      - origin
+      - originated from
+      - originating location
+      - source location
+      - source site
+      - where it originated
+    possible_properties:
+      - entity: QualityEvent
+        property: initiating_site
+        canonical_name: QualityEvent.initiating_site
+        priority: 1
+
+      - entity: PSP
+        property: owning_site
+        canonical_name: PSP.owning_site
+        priority: 2
+
+      - entity: Batch
+        property: batch_site
+        canonical_name: Batch.batch_site
+        priority: 3
+
+
+  # ============================================================
+  # PEOPLE / RESPONSIBILITY
+  # ============================================================
+
+  creator:
+    type: PROPERTY_ALIAS
+    aliases:
+      - creator
+      - created by
+      - created person
+      - author
+      - entered by
+    semantic_role: CREATED_BY
+
+  approver:
+    type: PROPERTY_ALIAS
+    aliases:
+      - approver
+      - approved by
+      - approval person
+      - approving person
+    semantic_role: APPROVER
+
+  investigator:
+    type: PROPERTY_ALIAS
+    aliases:
+      - investigator
+      - investigation owner
+      - investigator person
+      - assigned investigator
+    semantic_role: INVESTIGATOR
+
+  assignee:
+    type: PROPERTY_ALIAS
+    aliases:
+      - assignee
+      - assigned to
+      - owner
+      - person assigned
+      - responsible person
+    semantic_role: ASSIGNEE
+
+  quality_approver:
+    type: PROPERTY_ALIAS
+    aliases:
+      - quality approver
+      - QA approver
+      - quality approval
+      - QA approval
+    semantic_role: QUALITY_APPROVER
+
+
+  # ============================================================
+  # ROOT CAUSE
+  # ============================================================
+
+  root_cause:
+    type: PROPERTY_ALIAS
+    aliases:
+      - root cause
+      - primary cause
+      - underlying cause
+      - cause
+      - causal factor
+    preferred_property:
+      entity: PSP
+      property: root_cause
+      canonical_name: PSP.root_cause
+
+  root_cause_category:
+    type: PROPERTY_ALIAS
+    aliases:
+      - root cause category
+      - cause category
+      - causal category
+      - root cause classification
+    preferred_property:
+      entity: PSP
+      property: root_cause_category
+      canonical_name: PSP.root_cause_category
+
+
+  # ============================================================
+  # EVENT CONCEPTS
+  # ============================================================
+
+  event:
+    type: ENTITY
+    aliases:
+      - event
+      - quality event
+      - QE event
+      - event record
+
+  quality_event:
+    type: ENTITY
+    aliases:
+      - quality event
+      - QE
+      - quality issue
+      - quality record
+
+  investigation:
+    type: ENTITY
+    aliases:
+      - investigation
+      - investigations
+      - PSP
+      - problem solving process
+      - problem solving
+    preferred_entity: PSP
+
+  problem_solving:
+    type: ENTITY
+    aliases:
+      - problem solving
+      - problem solving process
+      - PSP
+      - investigation
+    preferred_entity: PSP
+
+
+  # ============================================================
+  # CAPA
+  # ============================================================
+
+  capa:
+    type: ENTITY
+    aliases:
+      - CAPA
+      - corrective action
+      - corrective and preventive action
+      - corrective action preventive action
+
+  corrective_action:
+    type: ENTITY
+    aliases:
+      - corrective action
+      - corrective actions
+      - CA
+      - action
+    preferred_entity: CAPA
+
+  preventive_action:
+    type: ENTITY
+    aliases:
+      - preventive action
+      - preventive actions
+      - PA
+    preferred_entity: CAPA
+
+  capa_overdue:
+    type: DERIVED
+    aliases:
+      - overdue CAPA
+      - overdue CAPAs
+      - late CAPA
+      - late CAPAs
+      - past due CAPA
+      - past due CAPAs
+    entity: CAPA
+    semantic_role: OVERDUE
+
+
+  # ============================================================
+  # EVALUATION
+  # ============================================================
+
+  evaluation:
+    type: ENTITY
+    aliases:
+      - evaluation
+      - evaluations
+      - assessment
+      - review
+    preferred_entity: Evaluation
+
+  evaluated:
+    type: DERIVED
+    aliases:
+      - evaluated
+      - has evaluation
+      - evaluated by
+    semantic_role: HAS_EVALUATION
+
+
+  # ============================================================
+  # BATCH
+  # ============================================================
+
+  batch:
+    type: ENTITY
+    aliases:
+      - batch
+      - lot
+      - production batch
+      - manufacturing batch
+
+  batch_related:
+    type: RELATIONSHIP_CONCEPT
+    aliases:
+      - related batch
+      - associated batch
+      - affected batch
+      - impacted batch
+
+
+  # ============================================================
+  # TESTING
+  # ============================================================
+
+  testing:
+    type: ENTITY
+    aliases:
+      - testing
+      - test
+      - test record
+      - testing record
+
+  testing_type:
+    type: PROPERTY_ALIAS
+    aliases:
+      - testing type
+      - test type
+      - type of test
+      - testing method
+
+
+  # ============================================================
+  # CATEGORY
+  # ============================================================
+
+  category:
+    type: PROPERTY_ALIAS
+    aliases:
+      - category
+      - classification
+      - class
+      - issue category
+      - event category
+
+
+  # ============================================================
+  # EVENT TYPE
+  # ============================================================
+
+  event_type:
+    type: PROPERTY_ALIAS
+    aliases:
+      - event type
+      - type of event
+      - event classification
+
+
+  # ============================================================
+  # STATUS
+  # ============================================================
+
+  status:
+    type: PROPERTY_ALIAS
+    aliases:
+      - status
+      - state
+      - current state
+      - current status
+
+  current_status:
+    type: PROPERTY_ALIAS
+    aliases:
+      - current status
+      - current state
+      - present status
+
+
+  # ============================================================
+  # RELATIONSHIP CONCEPTS
+  # ============================================================
+
+  related_to:
+    type: RELATIONSHIP
+    aliases:
+      - related to
+      - related
+      - associated with
+      - associated
+      - linked to
+      - connected to
+
+  has_event:
+    type: RELATIONSHIP
+    aliases:
+      - has event
+      - has events
+      - associated event
+      - related event
+
+  has_capa:
+    type: RELATIONSHIP
+    aliases:
+      - has CAPA
+      - has CAPAs
+      - associated CAPA
+      - related CAPA
+      - CAPA associated with
+
+  has_evaluation:
+    type: RELATIONSHIP
+    aliases:
+      - has evaluation
+      - has evaluations
+      - evaluated through
+      - associated evaluation
+
+  has_batch:
+    type: RELATIONSHIP
+    aliases:
+      - has batch
+      - has batches
+      - associated batch
+      - related batch
+
+  belongs_to:
+    type: RELATIONSHIP
+    aliases:
+      - belongs to
+      - belongs
+      - associated with
+      - assigned to
+
+
+  # ============================================================
+  # COUNT / EXISTENCE CONCEPTS
+  # ============================================================
+
+  count:
+    type: OPERATION
+    aliases:
+      - how many
+      - number of
+      - count
+      - total number
+      - total count
+
+  exists:
+    type: OPERATION
+    aliases:
+      - exists
+      - are there
+      - any
+      - at least one
+      - has
+
+  percentage:
+    type: OPERATION
+    aliases:
+      - percentage
+      - percent
+      - proportion
+      - percentage of
+
+  average:
+    type: OPERATION
+    aliases:
+      - average
+      - mean
+      - avg
+
+  minimum:
+    type: OPERATION
+    aliases:
+      - minimum
+      - minimum value
+      - lowest
+      - smallest
+      - least
+
+  maximum:
+    type: OPERATION
+    aliases:
+      - maximum
+      - maximum value
+      - highest
+      - largest
+      - greatest
+
+
+  # ============================================================
+  # COMPARISON CONCEPTS
+  # ============================================================
+
+  greater_than:
+    type: OPERATOR
+    aliases:
+      - greater than
+      - more than
+      - above
+      - higher than
+      - exceeds
+
+  less_than:
+    type: OPERATOR
+    aliases:
+      - less than
+      - fewer than
+      - below
+      - lower than
+
+  equal_to:
+    type: OPERATOR
+    aliases:
+      - equal to
+      - equals
+      - is
+      - exactly
+
+  not_equal_to:
+    type: OPERATOR
+    aliases:
+      - not equal
+      - does not equal
+      - is not
+      - different from
+
+  at_least:
+    type: OPERATOR
+    aliases:
+      - at least
+      - minimum of
+      - no fewer than
+      - greater than or equal to
+
+  at_most:
+    type: OPERATOR
+    aliases:
+      - at most
+      - maximum of
+      - no more than
+      - less than or equal to
+
+
+  # ============================================================
+  # COMMON BUSINESS PHRASES
+  # ============================================================
+
+  failed:
+    type: DERIVED
+    aliases:
+      - failed
+      - failure
+      - failures
+      - unsuccessful
+      - did not pass
+    semantic_role: FAILURE
+
+  passed:
+    type: DERIVED
+    aliases:
+      - passed
+      - pass
+      - successful
+      - success
+    semantic_role: SUCCESS
+
+  active_investigation:
+    type: DERIVED
+    aliases:
+      - active investigation
+      - open investigation
+      - ongoing investigation
+      - investigation still open
+    entity: PSP
+    semantic_role: ACTIVE_STATUS
+
+  completed_investigation:
+    type: DERIVED
+    aliases:
+      - completed investigation
+      - closed investigation
+      - finished investigation
+    entity: PSP
+    semantic_role: COMPLETED_STATUS
+
+  high_risk_event:
+    type: DERIVED
+    aliases:
+      - high risk event
+      - high-risk event
+      - critical quality event
+    entity: QualityEvent
+    rules:
+      - property: overall_risk_level
+        operator: "="
+        value: High
+
+  recent:
+    type: TEMPORAL
+    aliases:
+      - recent
+      - recently
+      - latest
+      - recent records
+    parameterized: true
+    semantic_role: RECENT_DATE_RANGE

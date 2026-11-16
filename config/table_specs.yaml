@@ -1,0 +1,588 @@
+tables:
+  qe:
+    source_table: qe
+    primary_node:
+      node_type: QualityEvent
+      primary_key_column: qe_id
+      display_column: qe_id
+      display_fallback_prefix: QualityEvent
+    derived_nodes:
+      - column: created_by
+        node_type: Person
+      - column: investigator
+        node_type: Person
+      - column: approver
+        node_type: Person
+      - column: initiating_site
+        node_type: Site
+      - column: locaiton
+        node_type: Location
+    properties:
+      excluded_columns:
+        - qe_id
+        - observatrion
+        - expectation
+    chunks:
+      source_pk_column: qe_id
+      node_type: QualityEvent
+      fields:
+        - source_column: observatrion
+          chunk_type: Observation
+          metadata_chunk_type: Observation
+          aliases: [observatrion]
+        - source_column: expectation
+          chunk_type: Expectation
+          metadata_chunk_type: Expectation
+
+  psp:
+    source_table: psp
+    primary_node:
+      node_type: PSP
+      primary_key_column: psp_id
+      display_column: psp_id
+      display_fallback_prefix: PSP
+    derived_nodes:
+      - column: created_by
+        node_type: Person
+      - column: owniing_site
+        node_type: Site
+      - column: root_cause
+        node_type: RootCause
+      - column: root_cause_category
+        node_type: RootCauseCategory
+    properties:
+      excluded_columns:
+        - psp_id
+        - description
+        - investigation
+        - investigation_plan
+        - investigation_summary
+        - historical_paramter
+        - root_cause
+        - justification
+    chunks:
+      source_pk_column: psp_id
+      node_type: PSP
+      fields:
+        - source_column: description
+          chunk_type: Description
+          metadata_chunk_type: Description
+        - source_column: investigation
+          chunk_type: Investigation
+          metadata_chunk_type: Investigation
+        - source_column: investigation_plan
+          chunk_type: Investigation Plan
+          metadata_chunk_type: Investigation Plan
+        - source_column: investigation_summary
+          chunk_type: Investigation Summary
+          metadata_chunk_type: Investigation Summary
+        - source_column: historical_parameter
+          chunk_type: Historical Parameter
+          metadata_chunk_type: Historical Parameter
+          aliases: [historical_paramter]
+        - source_column: root_cause
+          chunk_type: Root Cause
+          metadata_chunk_type: Root Cause
+        - source_column: justification
+          chunk_type: Justification
+          metadata_chunk_type: Justification
+
+  capa:
+    source_table: capa
+    primary_node:
+      node_type: CAPA
+      primary_key_column: capa_id
+      display_column: capa_id
+      display_fallback_prefix: CAPA
+    derived_nodes:
+      - column: qa_approver
+        node_type: Person
+      - column: initiating_site
+        node_type: Site
+    properties:
+      excluded_columns:
+        - capa_id
+        - action_take
+        - aq_assessment
+    chunks:
+      source_pk_column: capa_id
+      node_type: CAPA
+      fields:
+        - source_column: action_take
+          chunk_type: Action Taken
+          metadata_chunk_type: Action Taken
+        - source_column: aq_assessment
+          chunk_type: QA Assessment
+          metadata_chunk_type: QA Assessment
+
+  containment_actions:
+    source_table: containment_actions
+    primary_node:
+      node_type: ContainmentAction
+      primary_key_column: con_id
+      display_column: con_id
+      display_fallback_prefix: ContainmentAction
+    derived_nodes:
+      - column: assign_to
+        node_type: Person
+      - column: completed_by
+        node_type: Person
+      - column: quality_appropver
+        node_type: Person
+    properties:
+      excluded_columns:
+        - con_id
+        - description
+        - justification
+        - qa_assessment
+    chunks:
+      source_pk_column: con_id
+      node_type: ContainmentAction
+      fields:
+        - source_column: description
+          chunk_type: Description
+          metadata_chunk_type: Description
+        - source_column: justification
+          chunk_type: Justification
+          metadata_chunk_type: Justification
+        - source_column: qa_assessment
+          chunk_type: QA Assessment
+          metadata_chunk_type: QA Assessment
+
+  batch_containment_details:
+    source_table: batch_containment_details
+    primary_node:
+      node_type: Batch
+      primary_key_column: batch
+      display_column: batch
+      display_fallback_prefix: Batch
+    derived_nodes:
+      - column: batch_site
+        node_type: Site
+    properties:
+      excluded_columns:
+        - batch
+        - batch_material
+    chunks:
+      source_pk_column: batch
+      node_type: Batch
+      fields:
+        - source_column: batch_material
+          chunk_type: Batch Material
+          metadata_chunk_type: Batch Material
+
+  qe_events:
+    source_table: qe_events
+    primary_node:
+      node_type: QEEvent
+      primary_key_column: event_id
+      display_column: event_id
+      display_fallback_prefix: QEEvent
+    derived_nodes:
+      - column: failurecode
+        node_type: FailureCode
+      - column: category
+        node_type: Category
+      - column: event_type
+        node_type: EventType
+      - column: testing_id
+        node_type: Test
+        conditions:
+          field: event_type
+          allowed_values: [oox]
+      - column: testing_type
+        node_type: TestingType
+        conditions:
+          field: event_type
+          allowed_values: [oox]
+    properties:
+      excluded_columns:
+        - event_id
+        - event_description
+        - test_description
+        - specification
+        - defect_item_description
+    chunks:
+      source_pk_column: event_id
+      node_type: QEEvent
+      fields:
+        - source_column: event_description
+          chunk_type: Event Description
+          metadata_chunk_type: Event Description
+          aliases: [event_description]
+        - source_column: test_description
+          chunk_type: Test Description
+          metadata_chunk_type: Test Description
+        - source_column: specification
+          chunk_type: Specification
+          metadata_chunk_type: Specification
+          aliases: [specificatin]
+        - source_column: defect_item_description
+          chunk_type: Defect Item Description
+          metadata_chunk_type: Defect Item Description
+
+  initial_evaluations:
+    source_table: initial_evaluations
+    primary_node:
+      node_type: Evaluation
+      primary_key_column: eval_id
+      display_column: eval_id
+      display_fallback_prefix: Evaluation
+    derived_nodes:
+      - column: overall_risk_level
+        node_type: RiskLevel
+    properties:
+      excluded_columns:
+        - eval_id
+        - impact_on_product_medical_device
+        - risk_to_patient_health
+        - quality_system_failure
+        - initial_assess_outcome
+        - direct_cause
+    chunks:
+      source_pk_column: eval_id
+      node_type: Evaluation
+      fields:
+        - source_column: impact_on_product_medical_device
+          chunk_type: Medical Device Impact
+          metadata_chunk_type: Medical Device Impact
+        - source_column: risk_to_patient_health
+          chunk_type: Patient Risk
+          metadata_chunk_type: Patient Risk
+          aliases: [risk_to_patine_health]
+        - source_column: quality_system_failure
+          chunk_type: Quality System Failure
+          metadata_chunk_type: Quality System Failure
+        - source_column: initial_assess_outcome
+          chunk_type: Assessment Outcome
+          metadata_chunk_type: Assessment Outcome
+        - source_column: direct_cause
+          chunk_type: Direct Cause
+          metadata_chunk_type: Direct Cause
+
+  custom_table:
+    source_table: custom_table
+    primary_node:
+      node_type: CustomNode
+      primary_key_column: custom_id
+      display_column: title
+      display_fallback_prefix: CustomNode
+    derived_nodes:
+      - column: owner
+        node_type: Person
+    properties:
+      excluded_columns:
+        - custom_id
+        - title
+        - description
+    chunks: {}
+
+
+# ============================================================================
+# Person Relationship Configuration
+# ============================================================================
+#
+# Defines how Person nodes are connected to business objects.
+#
+# Relationship Type:
+#   ASSIGNED_TO
+#
+# The role is stored on the EDGE, not on the Person node.
+#
+# ============================================================================
+
+person_relationships:
+
+  relationship_name: ASSIGNED_TO
+
+  person_node_type: Person
+
+  normalize_person_name: true
+
+  create_person_node_if_missing: true
+
+  ignore_null_values: true
+
+  trim_whitespace: true
+
+  case_insensitive_matching: true
+
+  # --------------------------------------------------------------------------
+  # Source Tables
+  # --------------------------------------------------------------------------
+
+  sources:
+
+    # ============================================================
+    # Quality Event
+    # ============================================================
+
+    - table: qe
+      source_node_type: QualityEvent
+      source_pk: qe_id
+
+      relationships:
+
+        - column: created_by
+          role: Created By
+
+        - column: investigator
+          role: Investigator
+
+        - column: approver
+          role: Approver
+
+        - column: who_discoverd
+          role: Discovered By
+
+    # ============================================================
+    # PSP
+    # ============================================================
+
+    - table: psp
+      source_node_type: PSP
+      source_pk: psp_id
+
+      relationships:
+
+        - column: created_by
+          role: Created By
+
+    # ============================================================
+    # CAPA
+    # ============================================================
+
+    - table: capa
+      source_node_type: CAPA
+      source_pk: capa_id
+
+      relationships:
+
+        - column: qa_approver
+          role: QA Approver
+
+    # ============================================================
+    # Containment
+    # ============================================================
+
+    - table: containment_actions
+      source_node_type: ContainmentAction
+      source_pk: con_id
+
+      relationships:
+
+        - column: assign_to
+          role: Assigned To
+
+        - column: completed_by
+          role: Completed By
+
+        - column: quality_approver
+          role: QA Approver
+
+
+###############################################################################
+# Primary Business Object Relationships
+###############################################################################
+
+version: 1.0
+
+relationships:
+
+###############################################################################
+# Quality Event -> PSP
+###############################################################################
+
+  - relationship: HAS_PSP
+
+    source:
+      table: qe
+      node_type: QualityEvent
+      pk: qe_id
+
+    target:
+      table: psp
+      node_type: PSP
+      pk: psp_id
+
+    foreign_key:
+      column: parent_qeid
+
+    direction: parent_to_child
+    bidirectional: true
+
+###############################################################################
+# Quality Event -> QE Event
+###############################################################################
+
+  - relationship: HAS_EVENT
+
+    source:
+      table: qe
+      node_type: QualityEvent
+      pk: qe_id
+
+    target:
+      table: qe_events
+      node_type: QEEvent
+      pk: event_id
+
+    foreign_key:
+      column: parent_qe_id
+
+    direction: parent_to_child
+    bidirectional: true
+
+###############################################################################
+# Quality Event -> Evaluation
+###############################################################################
+
+  - relationship: HAS_EVALUATION
+
+    source:
+      table: qe
+      node_type: QualityEvent
+      pk: qe_id
+
+    target:
+      table: initial_evaluations
+      node_type: Evaluation
+      pk: eval_id
+
+    foreign_key:
+      column: parent_qeid
+
+    direction: parent_to_child
+    bidirectional: true
+
+###############################################################################
+# Quality Event -> Containment
+###############################################################################
+
+  - relationship: HAS_CONTAINMENT
+
+    source:
+      table: qe
+      node_type: QualityEvent
+      pk: qe_id
+
+    target:
+      table: containment_actions
+      node_type: ContainmentAction
+      pk: con_id
+
+    foreign_key:
+      column: parent_qe_id
+
+    direction: parent_to_child
+    bidirectional: true
+
+###############################################################################
+# PSP -> CAPA
+###############################################################################
+
+  - relationship: HAS_CAPA
+
+    source:
+      table: psp
+      node_type: PSP
+      pk: psp_id
+
+    target:
+      table: capa
+      node_type: CAPA
+      pk: capa_id
+
+    foreign_key:
+      column: parent_psp_id
+
+    direction: parent_to_child
+    bidirectional: true
+
+###############################################################################
+# PSP -> QE Event (Optional)
+###############################################################################
+
+  - relationship: HAS_EVENT
+
+    source:
+      table: psp
+      node_type: PSP
+      pk: psp_id
+
+    target:
+      table: qe_events
+      node_type: QEEvent
+      pk: event_id
+
+    foreign_key:
+      column: parent_psp_id
+
+    direction: parent_to_child
+    bidirectional: true
+
+###############################################################################
+# PSP -> Containment (Optional)
+###############################################################################
+
+  - relationship: HAS_CONTAINMENT
+
+    source:
+      table: psp
+      node_type: PSP
+      pk: psp_id
+
+    target:
+      table: containment_actions
+      node_type: ContainmentAction
+      pk: con_id
+
+    foreign_key:
+      column: parent_psp_id
+
+    direction: parent_to_child
+    bidirectional: true
+
+###############################################################################
+# QE Event -> Evaluation
+###############################################################################
+
+  - relationship: HAS_EVALUATION
+
+    source:
+      table: qe_events
+      node_type: QEEvent
+      pk: event_id
+
+    target:
+      table: initial_evaluations
+      node_type: Evaluation
+      pk: eval_id
+
+    foreign_key:
+      column: parent_event_id
+
+    direction: parent_to_child
+    bidirectional: true
+
+###############################################################################
+# Containment -> Batch
+###############################################################################
+
+  - relationship: HAS_BATCH
+
+    source:
+      table: containment_actions
+      node_type: ContainmentAction
+      pk: con_id
+
+    target:
+      table: batch_containment_details
+      node_type: Batch
+      pk: batch
+
+    foreign_key:
+      column: con_id
+
+    direction: parent_to_child
+    bidirectional: true
