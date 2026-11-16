@@ -5,8 +5,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .vscode/
-data/*.duckdb
-data/*.duckdb.wal
+*.duckdb
+*.duckdb.wal
 *.log
 junit_out.xml
 pytest_out.txt
